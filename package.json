@@ -1,0 +1,35 @@
+{
+  "name": "@tybys/prune-node-modules",
+  "description": "Prune node_modules",
+  "version": "0.1.0",
+  "author": {
+    "name": "toyobayashi",
+    "email": "lifenglin314@outlook.com"
+  },
+  "bugs": {
+    "url": "https://github.com/toyobayashi/prune-node-modules/issues"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2"
+  },
+  "homepage": "https://github.com/toyobayashi/prune-node-modules",
+  "keywords": [
+    "node_modules"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/toyobayashi/prune-node-modules.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4",
+    "rimraf": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
