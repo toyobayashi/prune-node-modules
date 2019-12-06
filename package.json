@@ -9,9 +9,6 @@
   "bugs": {
     "url": "https://github.com/toyobayashi/prune-node-modules/issues"
   },
-  "devDependencies": {
-    "mocha": "^6.2.2"
-  },
   "homepage": "https://github.com/toyobayashi/prune-node-modules",
   "keywords": [
     "node_modules"
@@ -23,7 +20,7 @@
     "url": "git://github.com/toyobayashi/prune-node-modules.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "node test/index"
   },
   "dependencies": {
     "minimatch": "^3.0.4",

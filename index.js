@@ -4,10 +4,6 @@ const rimraf = require('rimraf')
 const minimatch = require('minimatch')
 
 const blackFiles = [
-  'Makefile',
-  'Gulpfile.js',
-  'Gruntfile.js',
-  'gulpfile.js',
   '.DS_Store',
   '.tern-project',
   '.gitattributes',
@@ -17,6 +13,7 @@ const blackFiles = [
   '.eslintrc.js',
   '.eslintrc.json',
   '.eslintignore',
+  'tslint.json',
   '.stylelitrc',
   '.htmllintrc',
   'htmllint.js',
@@ -44,18 +41,27 @@ const blackFiles = [
   'babel.config.js',
   '.yo-rc.json',
   'jest.config.js',
+  'api-extractor.json'
+]
+
+const prodBlackFiles = [
+  'Makefile',
+  'CMakeLists',
+  'Gulpfile.js',
+  'Gruntfile.js',
+  'gulpfile.js',
   'tsconfig.json',
   'webpack.config.js',
   'webpack.config.ts',
   'webpack.config.coffee',
-  'binding.gyp',
-  'api-extractor.json'
+  'binding.gyp'
 ]
 
 const blackPackages = [
   'nan',
   'node-gyp',
   'node-addon-api',
+  '@types',
   '.bin'
 ]
 
@@ -79,19 +85,46 @@ const blackDirs = [
 const defaultWhitelist = [
   '**/*.js',
   '**/*.json',
-  '**/*.node'
+  '**/*.node',
+  '**/*.wasm'
+]
+
+const devWhiteList = [
+  '**/*.ts',
+  '**/*.txt',
+  '**/*.html',
+  '**/*.css',
+  '**/*.vue',
+  '**/*.tsx',
+  '**/*.jsx',
+  '**/*.less',
+  '**/*.sass',
+  '**/*.scss',
+  '**/*.ejs',
+  '**/*.jade',
+  '**/*.coffee',
+  '**/*.c',
+  '**/*.cc',
+  '**/*.cpp',
+  '**/*.py',
+  '**/*.svg',
+  '**/*.ttf',
+  '**/*.otf',
+  '**/*.woff2',
+  '**/*.eot'
 ]
 
 function pruneSync (dir, options) {
   const nodeModulesDir = path.join(dir, 'node_modules')
   if (!fs.existsSync(nodeModulesDir)) return
   if (!fs.statSync(nodeModulesDir).isDirectory()) return
+  const isProd = (!!options && !!options.production)
   const ls = fs.readdirSync(nodeModulesDir)
   for (let i = 0; i < ls.length; i++) {
-    if (ls[i] === '.' || ls[i] === '..') continue
+    if (ls[i] === '.' || ls[i] === '..' || (!isProd && ls[i] === '.bin')) continue
     const packageDir = path.join(nodeModulesDir, ls[i])
     if (fs.statSync(packageDir).isDirectory()) {
-      if (blackPackages.some(d => (d === ls[i]))) {
+      if (isProd && blackPackages.some(d => (d === ls[i]))) {
         rimraf.sync(packageDir)
       } else {
         pruneSync(packageDir, options)
@@ -105,15 +138,21 @@ function _pruneDirSync (dir, options) {
   if (!fs.existsSync(dir)) return
   if (!fs.statSync(dir).isDirectory()) return
 
+  const isProd = (!!options && !!options.production)
+
+  const mergeDevWhitelist = isProd ? [] : devWhiteList
+  const blackFileList = isProd ? [...blackFiles, ...prodBlackFiles] : blackFiles
+
   const ls = fs.readdirSync(dir)
-  const wl = [...defaultWhitelist, ...(options ? (Array.isArray(options.whitelist) ? options.whitelist : []) : [])]
-  const removeFiles = (options ? (Array.isArray(options.removeFiles) ? options.removeFiles : blackFiles) : blackFiles)
+  const wl = Array.from(new Set([...defaultWhitelist, ...mergeDevWhitelist, ...(options ? (Array.isArray(options.whitelist) ? options.whitelist : []) : [])]))
+  const removeFiles = (options ? (Array.isArray(options.removeFiles) ? options.removeFiles : blackFileList) : blackFileList)
+  const removeDirs = (options ? (Array.isArray(options.removeDirs) ? options.removeDirs : blackDirs) : blackDirs)
 
   for (let i = 0; i < ls.length; i++) {
     if (ls[i] === '.' || ls[i] === '..') continue
     const targetPath = path.join(dir, ls[i])
     if (fs.statSync(targetPath).isDirectory()) {
-      if (blackDirs.some(d => (d === ls[i]))) {
+      if (removeDirs.some(d => (d === ls[i]))) {
         rimraf.sync(targetPath)
       } else {
         _pruneDirSync(targetPath, options)
@@ -123,6 +162,12 @@ function _pruneDirSync (dir, options) {
         rimraf.sync(targetPath)
       }
     }
+  }
+
+  try {
+    fs.rmdirSync(dir)
+  } catch (err) {
+    // ignore
   }
 }
 

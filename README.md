@@ -32,7 +32,20 @@ pnm(input)
 
 ## API
 
-### `pnm(input: string, options?: { whitelist?: string[]; removeFiles?: string[] }): void`
+``` ts
+declare namespace pnm {
+  export interface PruneOptions {
+    whitelist?: string[] // merge
+    removeFiles?: string[] // overwrite
+    removeDirs?: string[] // overwrite
+    production?: boolean // .js .json .node .wasm only
+  }
+}
+
+declare function pnm (dir: string, options?: PruneOptions): void
+
+export = pnm
+```
 
 ## License
 
