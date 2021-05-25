@@ -1,4 +1,4 @@
 const path = require('path')
-const pnm = require('..')
+const { pnm } = require('..')
 
 pnm(path.join(__dirname, '..'), { production: false })

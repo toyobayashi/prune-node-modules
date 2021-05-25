@@ -12,7 +12,7 @@ npm install @tybys/prune-node-modules
 
 ``` js
 const path = require('path')
-const pnm = require('@tybys/prune-node-modules')
+const { pnm } = require('@tybys/prune-node-modules')
 
 const input = path.join(__dirname)
 
@@ -23,7 +23,7 @@ pnm(input)
 
 ``` ts
 import * as path from 'path'
-import * as pnm from '@tybys/prune-node-modules'
+import { pnm } from '@tybys/prune-node-modules'
 
 const input = path.join(__dirname)
 
@@ -33,18 +33,24 @@ pnm(input)
 ## API
 
 ``` ts
-declare namespace pnm {
-  export interface PruneOptions {
-    whitelist?: string[] // merge
-    removeFiles?: string[] // overwrite
-    removeDirs?: string[] // overwrite
-    production?: boolean // .js .json .node .wasm only
-  }
+export declare interface PruneOptions {
+  /** Glob patterns */
+  whitelist?: string[]
+  /** File names */
+  removeFiles?: string[]
+  /** Directory names */
+  removeDirs?: string[]
+  /** For application production */
+  production?: boolean
 }
 
-declare function pnm (dir: string, options?: PruneOptions): void
+export declare class Pruner {
+  static prune (dir: string, options?: PruneOptions): void
+  constructor (options?: PruneOptions)
+  prune (dir: string): void
+}
 
-export = pnm
+export declare function pnm (dir: string, options?: PruneOptions): void
 ```
 
 ## License
