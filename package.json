@@ -1,7 +1,7 @@
 {
   "name": "@tybys/prune-node-modules",
   "description": "Prune node_modules",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "toyobayashi",
     "email": "lifenglin314@outlook.com"
